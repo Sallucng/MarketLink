@@ -22,6 +22,30 @@
         </div>
     </div>
 
+    <!-- Admin Navigation Toolbar -->
+    <div class="card card-custom p-2 bg-white border-0 shadow-sm mb-4">
+        <ul class="nav nav-pills nav-fill">
+            <li class="nav-item">
+                <a class="nav-link active fw-semibold" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-semibold text-secondary" href="{{ route('admin.markets.index') }}"><i class="bi bi-geo-alt me-1"></i> Manage Markets</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-semibold text-secondary" href="{{ route('admin.categories.index') }}"><i class="bi bi-tags me-1"></i> Categories</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-semibold text-secondary" href="{{ route('admin.moderation.reviews') }}"><i class="bi bi-shield-check me-1"></i> Moderation</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-semibold text-secondary" href="{{ route('admin.reports.index') }}"><i class="bi bi-graph-up me-1"></i> Reports</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-semibold text-secondary" href="{{ route('admin.announcements.index') }}"><i class="bi bi-megaphone me-1"></i> Announcements</a>
+            </li>
+        </ul>
+    </div>
+
     <!-- Platform Key Metrics (SRS §1.6) -->
     <div class="row g-3 mb-4">
         <div class="col-sm-6 col-lg">
