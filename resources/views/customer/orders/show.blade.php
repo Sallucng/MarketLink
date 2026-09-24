@@ -29,6 +29,13 @@
                 </button>
             </form>
 
+            <!-- Modify Button if before cutoff (SRS §1.6) -->
+            @if($order->canModifyOrCancel())
+                <button type="button" class="btn btn-outline-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modifyOrderModal">
+                    <i class="bi bi-pencil-square me-1"></i> Modify Order
+                </button>
+            @endif
+
             <!-- Cancel Button if before cutoff -->
             @if($order->canModifyOrCancel())
                 <form action="{{ route('customer.orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Cancel this pre-order? Your reserved stock will be released.')">
@@ -207,7 +214,53 @@
                     <div class="text-muted mt-1" style="font-size: 0.72rem;">Settle in cash or card directly at the stall upon collecting your produce.</div>
                 </div>
             </div>
+    </div>
+</div>
+
+@if($order->canModifyOrCancel())
+<!-- Modify Order Modal (SRS §1.6) -->
+<div class="modal fade" id="modifyOrderModal" tabindex="-1" aria-labelledby="modifyOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('customer.orders.modify', $order->id) }}" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="modifyOrderModalLabel">Modify Pre-Order #{{ $order->order_number }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">You can adjust your pickup date, time slot, and special requests prior to the cutoff deadline.</p>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Pickup Date:</label>
+                        <input type="date" name="pickup_date" class="form-control form-control-sm" min="{{ date('Y-m-d') }}" value="{{ $order->pickup_date->format('Y-m-d') }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Pickup Time Window:</label>
+                        <select name="pickup_time_slot" class="form-select form-select-sm" required>
+                            @php
+                                $slots = is_array($order->farmer->pickup_time_windows) ? $order->farmer->pickup_time_windows : explode(',', $order->farmer->pickup_time_windows ?? '08:00 AM - 10:00 AM,10:30 AM - 12:30 PM,01:00 PM - 03:00 PM');
+                            @endphp
+                            @foreach($slots as $slot)
+                                @php $cleanSlot = trim($slot); @endphp
+                                <option value="{{ $cleanSlot }}" {{ $order->pickup_time_slot == $cleanSlot ? 'selected' : '' }}>{{ $cleanSlot }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Pickup Instructions / Special Notes:</label>
+                        <textarea name="notes" class="form-control form-control-sm" rows="3" placeholder="e.g. Please select firm tomatoes">{{ $order->notes }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-brand btn-sm rounded-pill px-4">Save Changes</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+@endif
 @endsection

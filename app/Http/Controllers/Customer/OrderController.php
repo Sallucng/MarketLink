@@ -63,6 +63,37 @@ class OrderController extends Controller
         return back()->with('success', 'Pre-order has been cancelled.');
     }
 
+    public function modify(Request $request, $id)
+    {
+        $order = Order::where('customer_id', Auth::id())
+            ->findOrFail($id);
+
+        if (!$order->canModifyOrCancel()) {
+            return back()->with('error', 'This pre-order cannot be modified because the cutoff time has passed or the order is already completed.');
+        }
+
+        $validated = $request->validate([
+            'pickup_date' => 'required|date|after_or_equal:today',
+            'pickup_time_slot' => 'required|string|max:100',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        $order->update([
+            'pickup_date' => $validated['pickup_date'],
+            'pickup_time_slot' => $validated['pickup_time_slot'],
+            'notes' => $validated['notes'] ?? $order->notes,
+        ]);
+
+        Notification::create([
+            'user_id' => Auth::id(),
+            'title' => "Pre-Order #{$order->order_number} Modified",
+            'message' => "You have updated the pickup schedule for pre-order #{$order->order_number}.",
+            'type' => 'order',
+        ]);
+
+        return back()->with('success', 'Pre-order details updated successfully.');
+    }
+
     public function reorder($id)
     {
         $order = Order::where('customer_id', Auth::id())

@@ -68,6 +68,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('customer')->name('customer.')->group(function () {
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+        Route::post('/orders/{id}/modify', [OrderController::class, 'modify'])->name('orders.modify');
         Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
         Route::post('/orders/{id}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
         Route::post('/orders/{id}/review', [ReviewController::class, 'store'])->name('orders.review');
